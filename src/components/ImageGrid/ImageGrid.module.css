@@ -1,0 +1,24 @@
+.grid {
+  columns: 3;
+  column-gap: 1rem;
+  padding: 1rem;
+}
+
+.item {
+  break-inside: avoid;
+  margin-bottom: 1rem;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+@media (max-width: 900px) {
+  .grid {
+    columns: 2;
+  }
+}
+
+@media (max-width: 560px) {
+  .grid {
+    columns: 1;
+  }
+}
