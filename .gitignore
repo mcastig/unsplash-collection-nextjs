@@ -30,10 +30,8 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files — only ignore .env.local (contains real secrets)
-# .env.development and .env.production are committed as templates
-.env.local
-.env*.local
+# env files — never commit credentials
+.env*
 
 # vercel
 .vercel
