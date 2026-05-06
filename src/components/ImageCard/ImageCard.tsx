@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import styles from './ImageCard.module.css';
-import { UnsplashImage } from '@/types';
+import Link from "next/link";
+import styles from "./ImageCard.module.css";
+import { UnsplashImage } from "@/types";
 
 interface Props {
   image: UnsplashImage;
@@ -15,7 +15,7 @@ export default function ImageCard({ image, style }: Props) {
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={image.urls.small}
-        alt={image.alt_description || image.description || 'Unsplash photo'}
+        alt={image.alt_description || image.description || "Unsplash photo"}
         loading="lazy"
       />
       <div className={styles.overlay} />

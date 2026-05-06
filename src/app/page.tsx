@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import styles from './page.module.css';
-import SearchInput from '@/components/SearchInput/SearchInput';
-import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { setQuery, searchPhotos } from '@/store/searchSlice';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import styles from "./page.module.css";
+import SearchInput from "@/components/SearchInput/SearchInput";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { setQuery, searchPhotos } from "@/store/searchSlice";
 
 export default function HomePage() {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const { query } = useAppSelector(s => s.search);
+  const { query } = useAppSelector((s) => s.search);
   const [localQuery, setLocalQuery] = useState(query);
 
   const handleSearch = () => {
@@ -24,7 +24,9 @@ export default function HomePage() {
     <div className={styles.page}>
       <div className={styles.center}>
         <h1 className={styles.title}>Search</h1>
-        <p className={styles.subtitle}>Search high-resolution images from Unsplash</p>
+        <p className={styles.subtitle}>
+          Search high-resolution images from Unsplash
+        </p>
         <SearchInput
           value={localQuery}
           onChange={setLocalQuery}

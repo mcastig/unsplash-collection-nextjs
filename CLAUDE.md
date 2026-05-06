@@ -29,11 +29,11 @@ No test runner is configured yet (test files are scaffolded but Jest/Vitest is n
 
 ## Environment files
 
-| File | Loaded when |
-|---|---|
-| `.env.development` | `npm run dev` — points to local Docker DB |
-| `.env.production` | `npm run build` / `npm run start` — points to Neon |
-| `.env.local` | Always, overrides both — holds the active `DATABASE_URL` |
+| File               | Loaded when                                              |
+| ------------------ | -------------------------------------------------------- |
+| `.env.development` | `npm run dev` — points to local Docker DB                |
+| `.env.production`  | `npm run build` / `npm run start` — points to Neon       |
+| `.env.local`       | Always, overrides both — holds the active `DATABASE_URL` |
 
 `.env.local` is gitignored. The other two are committed as templates.
 
@@ -56,26 +56,26 @@ collection_images (id, collection_id, image_id, image_url, image_thumb_url, imag
 
 ### Pages
 
-| Route | File | Purpose |
-|---|---|---|
-| `/` | `src/app/page.tsx` | Homepage — `hero-image.png` background, centered search input |
-| `/search` | `src/app/search/page.tsx` | Search results — gradient sticky banner, masonry grid |
-| `/images/[id]` | `src/app/images/[id]/page.tsx` | Image detail — author, date, collections, add/remove/download |
-| `/collections` | `src/app/collections/page.tsx` | Collections grid — create, delete (hover trash icon) |
-| `/collections/[id]` | `src/app/collections/[id]/page.tsx` | Collection detail — masonry photo grid |
+| Route               | File                                | Purpose                                                       |
+| ------------------- | ----------------------------------- | ------------------------------------------------------------- |
+| `/`                 | `src/app/page.tsx`                  | Homepage — `hero-image.png` background, centered search input |
+| `/search`           | `src/app/search/page.tsx`           | Search results — gradient sticky banner, masonry grid         |
+| `/images/[id]`      | `src/app/images/[id]/page.tsx`      | Image detail — author, date, collections, add/remove/download |
+| `/collections`      | `src/app/collections/page.tsx`      | Collections grid — create, delete (hover trash icon)          |
+| `/collections/[id]` | `src/app/collections/[id]/page.tsx` | Collection detail — masonry photo grid                        |
 
 ### API Routes (`src/app/api/`)
 
-| Endpoint | Purpose |
-|---|---|
-| `GET/POST /api/collections` | List all / create collection |
-| `GET/DELETE /api/collections/[id]` | Fetch or delete a collection |
-| `GET/POST /api/collections/[id]/images` | List / add images in collection |
-| `DELETE /api/collections/[id]/images/[imageId]` | Remove image from collection |
-| `GET /api/collections/by-image/[imageId]` | All collections containing an image |
-| `GET /api/unsplash/search?q=&page=` | Proxy Unsplash search |
-| `GET /api/unsplash/photos/[id]` | Proxy Unsplash photo detail |
-| `GET /api/unsplash/photos/[id]/download` | Trigger Unsplash download event |
+| Endpoint                                        | Purpose                             |
+| ----------------------------------------------- | ----------------------------------- |
+| `GET/POST /api/collections`                     | List all / create collection        |
+| `GET/DELETE /api/collections/[id]`              | Fetch or delete a collection        |
+| `GET/POST /api/collections/[id]/images`         | List / add images in collection     |
+| `DELETE /api/collections/[id]/images/[imageId]` | Remove image from collection        |
+| `GET /api/collections/by-image/[imageId]`       | All collections containing an image |
+| `GET /api/unsplash/search?q=&page=`             | Proxy Unsplash search               |
+| `GET /api/unsplash/photos/[id]`                 | Proxy Unsplash photo detail         |
+| `GET /api/unsplash/photos/[id]/download`        | Trigger Unsplash download event     |
 
 ### Redux Store (`src/store/`)
 
@@ -88,16 +88,16 @@ collection_images (id, collection_id, image_id, image_url, image_thumb_url, imag
 
 Each lives in its own folder: `Component.tsx` + `Component.module.css` + `Component.test.tsx`.
 
-| Component | Description |
-|---|---|
-| `Header` | Sticky nav — logo, Home/Collections links, light/dark toggle |
-| `SearchInput` | Controlled input; submits on Enter if value is non-empty |
-| `ImageCard` | Photo tile with hover overlay; links to `/images/[id]` |
-| `ImageGrid` | 3-column masonry layout using CSS `columns` |
-| `CollectionCard` | Collection tile with cover image; hover shows trash delete button |
-| `HeroBackground` | Decorative tile grid (homepage background) |
+| Component              | Description                                                                |
+| ---------------------- | -------------------------------------------------------------------------- |
+| `Header`               | Sticky nav — logo, Home/Collections links, light/dark toggle               |
+| `SearchInput`          | Controlled input; submits on Enter if value is non-empty                   |
+| `ImageCard`            | Photo tile with hover overlay; links to `/images/[id]`                     |
+| `ImageGrid`            | 3-column masonry layout using CSS `columns`                                |
+| `CollectionCard`       | Collection tile with cover image; hover shows trash delete button          |
+| `HeroBackground`       | Decorative tile grid (homepage background)                                 |
 | `AddToCollectionModal` | Searchable collection list; hides collections the image already belongs to |
-| `NewCollectionModal` | Name input form to create a new collection |
+| `NewCollectionModal`   | Name input form to create a new collection                                 |
 
 ### Theming
 

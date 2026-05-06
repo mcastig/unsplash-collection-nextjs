@@ -15,7 +15,7 @@
   padding: 2rem;
   width: 100%;
   max-width: 400px;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
 }
 
 .title {
@@ -42,7 +42,7 @@
 }
 
 .input:focus {
-  border-color: #8A3282;
+  border-color: #8a3282;
 }
 
 .actions {

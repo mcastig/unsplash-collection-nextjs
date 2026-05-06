@@ -1,45 +1,63 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import CollectionCard from './CollectionCard';
-import { Collection } from '@/types';
+import { render, screen, fireEvent } from "@testing-library/react";
+import CollectionCard from "./CollectionCard";
+import { Collection } from "@/types";
 
-const col: Collection = { id: 7, name: 'Urban', created_at: '2024-01-01', image_count: 4, cover_image: null };
+const col: Collection = {
+  id: 7,
+  name: "Urban",
+  created_at: "2024-01-01",
+  image_count: 4,
+  cover_image: null,
+};
 
 const colWithCover: Collection = {
   ...col,
-  cover_image: { id: 1, collection_id: 7, image_id: 'img1', image_url: '/full.jpg', image_thumb_url: '/thumb.jpg', image_small_url: '/small.jpg', photographer_name: 'X', photographer_username: 'x', photographer_avatar: '', published_at: null, created_at: '' },
+  cover_image: {
+    id: 1,
+    collection_id: 7,
+    image_id: "img1",
+    image_url: "/full.jpg",
+    image_thumb_url: "/thumb.jpg",
+    image_small_url: "/small.jpg",
+    photographer_name: "X",
+    photographer_username: "x",
+    photographer_avatar: "",
+    published_at: null,
+    created_at: "",
+  },
 };
 
-describe('CollectionCard', () => {
-  it('renders collection name and photo count', () => {
+describe("CollectionCard", () => {
+  it("renders collection name and photo count", () => {
     render(<CollectionCard collection={col} />);
-    expect(screen.getByText('Urban')).toBeInTheDocument();
-    expect(screen.getByText('4 photos')).toBeInTheDocument();
+    expect(screen.getByText("Urban")).toBeInTheDocument();
+    expect(screen.getByText("4 photos")).toBeInTheDocument();
   });
 
-  it('links to the collection detail page', () => {
+  it("links to the collection detail page", () => {
     render(<CollectionCard collection={col} />);
-    expect(screen.getByRole('link')).toHaveAttribute('href', '/collections/7');
+    expect(screen.getByRole("link")).toHaveAttribute("href", "/collections/7");
   });
 
-  it('shows placeholder when no cover image', () => {
+  it("shows placeholder when no cover image", () => {
     const { container } = render(<CollectionCard collection={col} />);
-    expect(container.querySelector('img')).not.toBeInTheDocument();
+    expect(container.querySelector("img")).not.toBeInTheDocument();
   });
 
-  it('renders cover image when provided', () => {
+  it("renders cover image when provided", () => {
     render(<CollectionCard collection={colWithCover} />);
-    expect(screen.getByRole('img')).toHaveAttribute('src', '/full.jpg');
+    expect(screen.getByRole("img")).toHaveAttribute("src", "/full.jpg");
   });
 
-  it('does not render delete button when onDelete is not provided', () => {
+  it("does not render delete button when onDelete is not provided", () => {
     render(<CollectionCard collection={col} />);
     expect(screen.queryByLabelText(/delete/i)).not.toBeInTheDocument();
   });
 
-  it('calls onDelete with collection id when delete button clicked', () => {
+  it("calls onDelete with collection id when delete button clicked", () => {
     const onDelete = jest.fn();
     render(<CollectionCard collection={col} onDelete={onDelete} />);
-    fireEvent.click(screen.getByLabelText('Delete Urban'));
+    fireEvent.click(screen.getByLabelText("Delete Urban"));
     expect(onDelete).toHaveBeenCalledWith(7);
   });
 });

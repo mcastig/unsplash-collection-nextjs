@@ -1,7 +1,7 @@
-import { configureStore } from '@reduxjs/toolkit';
-import searchReducer from './searchSlice';
-import collectionsReducer from './collectionsSlice';
-import imageReducer from './imageSlice';
+import { configureStore } from "@reduxjs/toolkit";
+import searchReducer from "./searchSlice";
+import collectionsReducer from "./collectionsSlice";
+import imageReducer from "./imageSlice";
 
 export const store = configureStore({
   reducer: {

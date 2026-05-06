@@ -8,12 +8,16 @@
   width: 32px;
   height: 32px;
   border: 3px solid var(--color-border);
-  border-top-color: #8A3282;
+  border-top-color: #8a3282;
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
 }
 
-@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
 
 .page {
   display: grid;
@@ -36,7 +40,7 @@
   max-height: calc(100vh - 120px);
   border-radius: 12px;
   object-fit: contain;
-  box-shadow: 0 8px 40px rgba(0,0,0,0.15);
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.15);
 }
 
 .panel {
@@ -208,7 +212,9 @@
   font-weight: 500;
   cursor: pointer;
   opacity: 0;
-  transition: opacity 0.15s, color 0.15s;
+  transition:
+    opacity 0.15s,
+    color 0.15s;
   white-space: nowrap;
   flex-shrink: 0;
 }

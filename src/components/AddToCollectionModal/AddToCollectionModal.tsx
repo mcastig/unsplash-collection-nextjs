@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useState, useMemo } from 'react';
-import Image from 'next/image';
-import styles from './AddToCollectionModal.module.css';
-import { Collection } from '@/types';
+import { useState, useMemo } from "react";
+import Image from "next/image";
+import styles from "./AddToCollectionModal.module.css";
+import { Collection } from "@/types";
 
 interface Props {
   collections: Collection[];
@@ -20,11 +20,11 @@ export default function AddToCollectionModal({
   onCreateNew,
   onClose,
 }: Props) {
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState("");
 
   const filtered = useMemo(() => {
     const q = query.toLowerCase().trim();
-    return collections.filter(c => {
+    return collections.filter((c) => {
       if (alreadyInCollectionIds.includes(c.id)) return false;
       if (q && !c.name.toLowerCase().includes(q)) return false;
       return true;
@@ -32,7 +32,10 @@ export default function AddToCollectionModal({
   }, [collections, alreadyInCollectionIds, query]);
 
   return (
-    <div className={styles.backdrop} onClick={e => e.target === e.currentTarget && onClose()}>
+    <div
+      className={styles.backdrop}
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+    >
       <div className={styles.modal}>
         <h2 className={styles.title}>Add to Collections</h2>
         <div className={styles.searchWrapper}>
@@ -41,7 +44,7 @@ export default function AddToCollectionModal({
             type="text"
             placeholder="Search collections..."
             value={query}
-            onChange={e => setQuery(e.target.value)}
+            onChange={(e) => setQuery(e.target.value)}
             autoFocus
           />
           <span className={styles.searchIcon}>
@@ -49,29 +52,43 @@ export default function AddToCollectionModal({
           </span>
         </div>
         {query && (
-          <p className={styles.matchCount}>{filtered.length} match{filtered.length !== 1 ? 'es' : ''}</p>
+          <p className={styles.matchCount}>
+            {filtered.length} match{filtered.length !== 1 ? "es" : ""}
+          </p>
         )}
         <div className={styles.list}>
           {filtered.length === 0 ? (
             <p className={styles.emptyText}>
-              {query ? 'No collections match your search' : 'No available collections'}
+              {query
+                ? "No collections match your search"
+                : "No available collections"}
             </p>
           ) : (
-            filtered.map(col => {
-              const coverUrl = col.cover_image?.image_thumb_url || col.cover_image?.image_url;
+            filtered.map((col) => {
+              const coverUrl =
+                col.cover_image?.image_thumb_url || col.cover_image?.image_url;
               return (
                 <div key={col.id} className={styles.item}>
                   {coverUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img className={styles.thumb} src={coverUrl} alt={col.name} />
+                    <img
+                      className={styles.thumb}
+                      src={coverUrl}
+                      alt={col.name}
+                    />
                   ) : (
                     <div className={styles.thumbPlaceholder} />
                   )}
                   <div className={styles.itemInfo}>
                     <p className={styles.itemName}>{col.name}</p>
-                    <p className={styles.itemCount}>{col.image_count ?? 0} photos</p>
+                    <p className={styles.itemCount}>
+                      {col.image_count ?? 0} photos
+                    </p>
                   </div>
-                  <button className={styles.addBtn} onClick={() => onAdd(col.id)}>
+                  <button
+                    className={styles.addBtn}
+                    onClick={() => onAdd(col.id)}
+                  >
                     <Image src="/Plus.svg" alt="" width={12} height={12} />
                     Add to Collection
                   </button>

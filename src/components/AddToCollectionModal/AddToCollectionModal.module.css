@@ -18,7 +18,7 @@
   max-height: 80vh;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
 }
 
 .title {
@@ -48,7 +48,7 @@
 }
 
 .searchInput:focus {
-  border-color: #8A3282;
+  border-color: #8a3282;
 }
 
 .searchIcon {
@@ -140,7 +140,9 @@
   cursor: pointer;
   white-space: nowrap;
   opacity: 0;
-  transition: opacity 0.15s, color 0.15s;
+  transition:
+    opacity 0.15s,
+    color 0.15s;
   flex-shrink: 0;
 }
 
@@ -163,7 +165,7 @@
 .newBtn {
   font-size: 0.875rem;
   font-weight: 500;
-  color: #8A3282;
+  color: #8a3282;
   background: none;
   border: none;
   cursor: pointer;

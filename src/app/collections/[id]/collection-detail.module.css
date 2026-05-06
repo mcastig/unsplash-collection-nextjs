@@ -33,12 +33,16 @@
   width: 32px;
   height: 32px;
   border: 3px solid var(--color-border);
-  border-top-color: #8A3282;
+  border-top-color: #8a3282;
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
 }
 
-@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
 
 .empty {
   text-align: center;
@@ -51,7 +55,7 @@
 }
 
 .browseLink {
-  color: #8A3282;
+  color: #8a3282;
   font-weight: 500;
   text-decoration: underline;
   text-underline-offset: 2px;
@@ -88,7 +92,7 @@
 .overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(0,0,0,0.45) 0%, transparent 50%);
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.45) 0%, transparent 50%);
   opacity: 0;
   transition: opacity 0.3s;
   display: flex;
@@ -107,9 +111,13 @@
 }
 
 @media (max-width: 900px) {
-  .grid { columns: 2; }
+  .grid {
+    columns: 2;
+  }
 }
 
 @media (max-width: 560px) {
-  .grid { columns: 1; }
+  .grid {
+    columns: 1;
+  }
 }

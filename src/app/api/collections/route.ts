@@ -1,5 +1,5 @@
-import { NextResponse } from 'next/server';
-import pool from '@/lib/db';
+import { NextResponse } from "next/server";
+import pool from "@/lib/db";
 
 export async function GET() {
   try {
@@ -15,20 +15,30 @@ export async function GET() {
     `);
     return NextResponse.json(rows);
   } catch {
-    return NextResponse.json({ error: 'Failed to fetch collections' }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch collections" },
+      { status: 500 },
+    );
   }
 }
 
 export async function POST(req: Request) {
   try {
     const { name } = await req.json();
-    if (!name?.trim()) return NextResponse.json({ error: 'Name is required' }, { status: 400 });
+    if (!name?.trim())
+      return NextResponse.json({ error: "Name is required" }, { status: 400 });
     const { rows } = await pool.query(
-      'INSERT INTO collections (name) VALUES ($1) RETURNING *',
-      [name.trim()]
+      "INSERT INTO collections (name) VALUES ($1) RETURNING *",
+      [name.trim()],
     );
-    return NextResponse.json({ ...rows[0], image_count: 0, cover_image: null }, { status: 201 });
+    return NextResponse.json(
+      { ...rows[0], image_count: 0, cover_image: null },
+      { status: 201 },
+    );
   } catch {
-    return NextResponse.json({ error: 'Failed to create collection' }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to create collection" },
+      { status: 500 },
+    );
   }
 }

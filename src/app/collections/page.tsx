@@ -1,16 +1,20 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import styles from './collections.module.css';
-import CollectionCard from '@/components/CollectionCard/CollectionCard';
-import NewCollectionModal from '@/components/NewCollectionModal/NewCollectionModal';
-import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { fetchCollections, createCollection, deleteCollection } from '@/store/collectionsSlice';
-import Image from 'next/image';
+import { useEffect, useState } from "react";
+import styles from "./collections.module.css";
+import CollectionCard from "@/components/CollectionCard/CollectionCard";
+import NewCollectionModal from "@/components/NewCollectionModal/NewCollectionModal";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import {
+  fetchCollections,
+  createCollection,
+  deleteCollection,
+} from "@/store/collectionsSlice";
+import Image from "next/image";
 
 export default function CollectionsPage() {
   const dispatch = useAppDispatch();
-  const { collections, loading } = useAppSelector(s => s.collections);
+  const { collections, loading } = useAppSelector((s) => s.collections);
   const [showNewModal, setShowNewModal] = useState(false);
 
   useEffect(() => {
@@ -31,8 +35,14 @@ export default function CollectionsPage() {
       <div className={styles.header}>
         <h1 className={`${styles.title} gradient-text`}>Collections</h1>
         <p className={styles.subtitle}>
-          Explore the world through collections of beautiful photos free to use under the{' '}
-          <a href="https://unsplash.com/license" target="_blank" rel="noopener noreferrer" className={styles.link}>
+          Explore the world through collections of beautiful photos free to use
+          under the{" "}
+          <a
+            href="https://unsplash.com/license"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styles.link}
+          >
             Unsplash License
           </a>
         </p>
@@ -43,22 +53,36 @@ export default function CollectionsPage() {
       </div>
 
       {loading ? (
-        <div className={styles.loading}><div className={styles.spinner} /></div>
+        <div className={styles.loading}>
+          <div className={styles.spinner} />
+        </div>
       ) : collections.length === 0 ? (
         <div className={styles.empty}>
           <p>No collections yet.</p>
-          <button className={styles.emptyBtn} onClick={() => setShowNewModal(true)}>Create your first collection</button>
+          <button
+            className={styles.emptyBtn}
+            onClick={() => setShowNewModal(true)}
+          >
+            Create your first collection
+          </button>
         </div>
       ) : (
         <div className={styles.grid}>
-          {collections.map(col => (
-            <CollectionCard key={col.id} collection={col} onDelete={handleDelete} />
+          {collections.map((col) => (
+            <CollectionCard
+              key={col.id}
+              collection={col}
+              onDelete={handleDelete}
+            />
           ))}
         </div>
       )}
 
       {showNewModal && (
-        <NewCollectionModal onSave={handleCreate} onCancel={() => setShowNewModal(false)} />
+        <NewCollectionModal
+          onSave={handleCreate}
+          onCancel={() => setShowNewModal(false)}
+        />
       )}
     </div>
   );

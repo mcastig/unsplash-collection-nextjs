@@ -1,5 +1,5 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { UnsplashImage } from '@/types';
+import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+import { UnsplashImage } from "@/types";
 
 interface SearchState {
   query: string;
@@ -13,7 +13,7 @@ interface SearchState {
 }
 
 const initialState: SearchState = {
-  query: '',
+  query: "",
   results: [],
   total: 0,
   totalPages: 0,
@@ -24,16 +24,18 @@ const initialState: SearchState = {
 };
 
 export const searchPhotos = createAsyncThunk(
-  'search/searchPhotos',
+  "search/searchPhotos",
   async ({ query, page = 1 }: { query: string; page?: number }) => {
-    const res = await fetch(`/api/unsplash/search?q=${encodeURIComponent(query)}&page=${page}`);
-    if (!res.ok) throw new Error('Search failed');
+    const res = await fetch(
+      `/api/unsplash/search?q=${encodeURIComponent(query)}&page=${page}`,
+    );
+    if (!res.ok) throw new Error("Search failed");
     return res.json();
-  }
+  },
 );
 
 const searchSlice = createSlice({
-  name: 'search',
+  name: "search",
   initialState,
   reducers: {
     setQuery(state, action: PayloadAction<string>) {
@@ -64,7 +66,7 @@ const searchSlice = createSlice({
       })
       .addCase(searchPhotos.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || 'Search failed';
+        state.error = action.error.message || "Search failed";
       });
   },
 });

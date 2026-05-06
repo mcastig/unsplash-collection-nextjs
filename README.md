@@ -14,14 +14,14 @@ A multi-page photo collection app built with Next.js 16, React 19, Redux Toolkit
 
 ## Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Framework | Next.js 16 (App Router) |
-| UI | React 19, TypeScript 5 |
-| State | Redux Toolkit + react-redux |
-| Styling | CSS Modules, Be Vietnam Pro font |
-| Database | PostgreSQL (Neon cloud or Docker local) |
-| API | Unsplash REST API |
+| Layer     | Technology                              |
+| --------- | --------------------------------------- |
+| Framework | Next.js 16 (App Router)                 |
+| UI        | React 19, TypeScript 5                  |
+| State     | Redux Toolkit + react-redux             |
+| Styling   | CSS Modules, Be Vietnam Pro font        |
+| Database  | PostgreSQL (Neon cloud or Docker local) |
+| API       | Unsplash REST API                       |
 
 ## Getting Started
 
@@ -98,12 +98,12 @@ src/
 
 ## Environment Variables
 
-| Variable | Used by | Description |
-|---|---|---|
-| `DATABASE_URL` | Server | PostgreSQL connection string |
-| `UNSPLASH_ACCESS_KEY` | Server | Unsplash API key (server-side) |
-| `NEXT_PUBLIC_UNSPLASH_ACCESS_KEY` | Client | Unsplash API key (client-side) |
-| `NEXT_PUBLIC_APP_URL` | Client | App base URL |
+| Variable                          | Used by | Description                    |
+| --------------------------------- | ------- | ------------------------------ |
+| `DATABASE_URL`                    | Server  | PostgreSQL connection string   |
+| `UNSPLASH_ACCESS_KEY`             | Server  | Unsplash API key (server-side) |
+| `NEXT_PUBLIC_UNSPLASH_ACCESS_KEY` | Client  | Unsplash API key (client-side) |
+| `NEXT_PUBLIC_APP_URL`             | Client  | App base URL                   |
 
 ## Database Schema
 
@@ -121,16 +121,16 @@ collection_images (
 
 ## API Endpoints
 
-| Method | Endpoint | Description |
-|---|---|---|
-| `GET` | `/api/collections` | List all collections |
-| `POST` | `/api/collections` | Create a collection |
-| `GET` | `/api/collections/:id` | Get collection with cover image and count |
-| `DELETE` | `/api/collections/:id` | Delete a collection |
-| `GET` | `/api/collections/:id/images` | List images in a collection |
-| `POST` | `/api/collections/:id/images` | Add an image to a collection |
-| `DELETE` | `/api/collections/:id/images/:imageId` | Remove an image from a collection |
-| `GET` | `/api/collections/by-image/:imageId` | Collections containing a specific image |
-| `GET` | `/api/unsplash/search?q=&page=` | Proxy Unsplash search |
-| `GET` | `/api/unsplash/photos/:id` | Proxy Unsplash photo detail |
-| `GET` | `/api/unsplash/photos/:id/download` | Trigger Unsplash download event |
+| Method   | Endpoint                               | Description                               |
+| -------- | -------------------------------------- | ----------------------------------------- |
+| `GET`    | `/api/collections`                     | List all collections                      |
+| `POST`   | `/api/collections`                     | Create a collection                       |
+| `GET`    | `/api/collections/:id`                 | Get collection with cover image and count |
+| `DELETE` | `/api/collections/:id`                 | Delete a collection                       |
+| `GET`    | `/api/collections/:id/images`          | List images in a collection               |
+| `POST`   | `/api/collections/:id/images`          | Add an image to a collection              |
+| `DELETE` | `/api/collections/:id/images/:imageId` | Remove an image from a collection         |
+| `GET`    | `/api/collections/by-image/:imageId`   | Collections containing a specific image   |
+| `GET`    | `/api/unsplash/search?q=&page=`        | Proxy Unsplash search                     |
+| `GET`    | `/api/unsplash/photos/:id`             | Proxy Unsplash photo detail               |
+| `GET`    | `/api/unsplash/photos/:id/download`    | Trigger Unsplash download event           |

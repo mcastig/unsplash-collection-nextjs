@@ -1,15 +1,19 @@
-import type { Metadata } from 'next';
-import './globals.css';
-import StoreProvider from '@/store/StoreProvider';
-import Header from '@/components/Header/Header';
+import type { Metadata } from "next";
+import "./globals.css";
+import StoreProvider from "@/store/StoreProvider";
+import Header from "@/components/Header/Header";
 
 export const metadata: Metadata = {
-  title: 'UnsplashBox',
-  description: 'Search and collect high-resolution images from Unsplash',
-  icons: { icon: '/favicon.ico' },
+  title: "UnsplashBox",
+  description: "Search and collect high-resolution images from Unsplash",
+  icons: { icon: "/favicon.ico" },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="en">
       <body>
