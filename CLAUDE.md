@@ -17,70 +17,106 @@ No test runner is configured yet (test files are scaffolded but Jest/Vitest is n
 
 - **Next.js 16** App Router (`src/app/`)
 - **React 19**, **TypeScript 5** (strict mode)
-- **Redux Toolkit** + **react-redux** for state management (`src/store/`)
+- **Redux Toolkit** + **react-redux** (`src/store/`)
 - **CSS Modules** (`.module.css` per component) — no Tailwind, no CSS-in-JS
-- **PostgreSQL** via **Neon** serverless — connection string in `.env.local` as `DATABASE_URL`
-- **Unsplash API** — `UNSPLASH_ACCESS_KEY` (server) + `NEXT_PUBLIC_UNSPLASH_ACCESS_KEY` (client) in `.env.local`
-- Font: **Be Vietnam Pro** loaded via `@import` in `globals.css`
+- **PostgreSQL** via Neon (cloud) or Docker local — `DATABASE_URL` in `.env.local`
+- **Unsplash API** — `UNSPLASH_ACCESS_KEY` (server) + `NEXT_PUBLIC_UNSPLASH_ACCESS_KEY` (client)
+- Font: **Be Vietnam Pro** via `@import` in `globals.css`
 
 ## Path alias
 
-`@/*` maps to `src/*`.
+`@/*` → `src/*` (configured in `tsconfig.json`).
+
+## Environment files
+
+| File | Loaded when |
+|---|---|
+| `.env.development` | `npm run dev` — points to local Docker DB |
+| `.env.production` | `npm run build` / `npm run start` — points to Neon |
+| `.env.local` | Always, overrides both — holds the active `DATABASE_URL` |
+
+`.env.local` is gitignored. The other two are committed as templates.
+
+## Database
+
+Two tables. Schema lives in `init.sql` (auto-run by Docker on first start).
+
+```sql
+collections (id, name, created_at)
+collection_images (id, collection_id, image_id, image_url, image_thumb_url, image_small_url,
+                   photographer_name, photographer_username, photographer_avatar,
+                   published_at, created_at, UNIQUE(collection_id, image_id))
+```
+
+**Local Docker:** `docker compose up -d` → PostgreSQL on `localhost:5432`.  
+**Neon:** connection string format: `postgresql://...@...neon.tech/neondb?sslmode=require`.  
+`src/lib/db.ts` skips SSL automatically when `DATABASE_URL` contains `localhost`.
 
 ## Architecture
 
 ### Pages
+
 | Route | File | Purpose |
 |---|---|---|
-| `/` | `src/app/page.tsx` | Homepage with hero background and search input |
-| `/search` | `src/app/search/page.tsx` | Search results grid (reads `?q=` param) |
-| `/images/[id]` | `src/app/images/[id]/page.tsx` | Image detail — author, collections, add/remove/download |
-| `/collections` | `src/app/collections/page.tsx` | Collections grid, create new collection |
-| `/collections/[id]` | `src/app/collections/[id]/page.tsx` | Collection detail — photos in collection |
+| `/` | `src/app/page.tsx` | Homepage — `hero-image.png` background, centered search input |
+| `/search` | `src/app/search/page.tsx` | Search results — gradient sticky banner, masonry grid |
+| `/images/[id]` | `src/app/images/[id]/page.tsx` | Image detail — author, date, collections, add/remove/download |
+| `/collections` | `src/app/collections/page.tsx` | Collections grid — create, delete (hover trash icon) |
+| `/collections/[id]` | `src/app/collections/[id]/page.tsx` | Collection detail — masonry photo grid |
 
 ### API Routes (`src/app/api/`)
+
 | Endpoint | Purpose |
 |---|---|
 | `GET/POST /api/collections` | List all / create collection |
-| `GET /api/collections/[id]` | Single collection with cover image & count |
-| `GET/POST /api/collections/[id]/images` | List images in collection / add image |
+| `GET/DELETE /api/collections/[id]` | Fetch or delete a collection |
+| `GET/POST /api/collections/[id]/images` | List / add images in collection |
 | `DELETE /api/collections/[id]/images/[imageId]` | Remove image from collection |
-| `GET /api/collections/by-image/[imageId]` | All collections containing a specific image |
-| `GET /api/unsplash/search` | Proxy Unsplash search (`?q=&page=`) |
+| `GET /api/collections/by-image/[imageId]` | All collections containing an image |
+| `GET /api/unsplash/search?q=&page=` | Proxy Unsplash search |
 | `GET /api/unsplash/photos/[id]` | Proxy Unsplash photo detail |
 | `GET /api/unsplash/photos/[id]/download` | Trigger Unsplash download event |
 
 ### Redux Store (`src/store/`)
-- `searchSlice` — Unsplash search query, results, loading state
-- `collectionsSlice` — collections list, selected collection, collection images, CRUD actions
+
+- `searchSlice` — query string, search results, loading/error state
+- `collectionsSlice` — collections list, selected collection, collection images; thunks for all CRUD
 - `imageSlice` — current image detail, which collections it belongs to
-- `StoreProvider.tsx` — wraps the app in `<Provider>` (mounted in `layout.tsx`)
+- `StoreProvider.tsx` — wraps the app in `<Provider>`, mounted in `layout.tsx`
 
 ### Components (`src/components/`)
-Each component lives in its own folder with `ComponentName.tsx`, `ComponentName.module.css`, and `ComponentName.test.tsx`.
 
-- `Header` — sticky nav bar with logo, Home/Collections links, theme toggle
-- `SearchInput` — controlled input that submits on Enter if non-empty
-- `ImageCard` — image tile with hover overlay; links to `/images/[id]`
-- `ImageGrid` — masonry 3-column layout using CSS columns
-- `CollectionCard` — collection tile with cover image; links to `/collections/[id]`
-- `HeroBackground` — decorative full-screen tile grid shown on the homepage
-- `AddToCollectionModal` — searchable list of collections; filters out ones the image already belongs to
-- `NewCollectionModal` — simple name-input form to create a new collection
+Each lives in its own folder: `Component.tsx` + `Component.module.css` + `Component.test.tsx`.
 
-### Database Schema (Neon PostgreSQL)
-```sql
-collections (id, name, created_at)
-collection_images (id, collection_id, image_id, image_url, image_thumb_url, image_small_url,
-                   photographer_name, photographer_username, photographer_avatar, published_at, created_at)
--- UNIQUE(collection_id, image_id) prevents duplicates
-```
+| Component | Description |
+|---|---|
+| `Header` | Sticky nav — logo, Home/Collections links, light/dark toggle |
+| `SearchInput` | Controlled input; submits on Enter if value is non-empty |
+| `ImageCard` | Photo tile with hover overlay; links to `/images/[id]` |
+| `ImageGrid` | 3-column masonry layout using CSS `columns` |
+| `CollectionCard` | Collection tile with cover image; hover shows trash delete button |
+| `HeroBackground` | Decorative tile grid (homepage background) |
+| `AddToCollectionModal` | Searchable collection list; hides collections the image already belongs to |
+| `NewCollectionModal` | Name input form to create a new collection |
 
 ### Theming
-Light/dark theme is toggled via `data-theme` attribute on `<html>`. CSS variables are defined in `globals.css`:
-- `--color-bg`, `--color-surface`, `--color-border`, `--color-text`, `--color-muted`
-- Gradient text: `background: linear-gradient(to right, #F2C593, #8A3282)`; apply `.gradient-text` utility class
+
+Toggle via `data-theme` attribute on `<html>`, set in `Header.tsx`, persisted in `localStorage`.
+
+CSS variables in `globals.css`:
+
+```css
+--color-bg      /* page background   */
+--color-surface /* cards, inputs     */
+--color-border  /* dividers          */
+--color-text    /* primary text      */
+--color-muted   /* secondary text    */
+```
+
+Gradient: `linear-gradient(to right, #F2C593, #8A3282)` — use the `.gradient-text` utility class for text.
 
 ### CSS conventions
-- Component styles use CSS Modules (`.module.css`); global/utility styles live in `src/app/globals.css`
-- Do not add Tailwind or inline styles — use module classes
+
+- All component styles use **CSS Modules** (`.module.css`) — never plain `.css` imports inside components
+- Global styles and utility classes live in `src/app/globals.css`
+- No Tailwind, no inline styles, no CSS-in-JS
