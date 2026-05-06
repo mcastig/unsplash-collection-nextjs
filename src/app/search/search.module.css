@@ -1,0 +1,64 @@
+.page {
+  min-height: calc(100vh - 56px);
+}
+
+.searchBanner {
+  background: linear-gradient(to right, #f2c593, #8a3282);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 3rem;
+  position: sticky;
+  top: 56px;
+  z-index: 50;
+}
+
+.searchBannerMiddle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: sticky;
+  top: 82px;
+  z-index: 50;
+  margin-top: -22px;
+  margin-bottom: 2rem;
+}
+
+.searchBanner > * {
+  max-width: 480px;
+  width: 100%;
+}
+
+.status {
+  display: flex;
+  justify-content: center;
+  padding: 4rem;
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--color-border);
+  border-top-color: #8a3282;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.error {
+  text-align: center;
+  color: #e05252;
+  padding: 2rem;
+}
+
+.empty {
+  text-align: center;
+  color: var(--color-muted);
+  padding: 4rem 2rem;
+  font-size: 1rem;
+}

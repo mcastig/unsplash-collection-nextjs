@@ -1,0 +1,115 @@
+.page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  min-height: calc(100vh - 56px);
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.title {
+  font-size: 2.25rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin-bottom: 0.375rem;
+}
+
+.count {
+  font-size: 0.875rem;
+  color: var(--color-muted);
+  font-weight: 400;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  padding: 4rem;
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--color-border);
+  border-top-color: #8A3282;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.empty {
+  text-align: center;
+  color: var(--color-muted);
+  padding: 4rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.browseLink {
+  color: #8A3282;
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.grid {
+  columns: 3;
+  column-gap: 1rem;
+}
+
+.item {
+  break-inside: avoid;
+  margin-bottom: 1rem;
+}
+
+.imgLink {
+  display: block;
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.img {
+  width: 100%;
+  height: auto;
+  display: block;
+  transition: transform 0.3s;
+}
+
+.imgLink:hover .img {
+  transform: scale(1.03);
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.45) 0%, transparent 50%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  display: flex;
+  align-items: flex-end;
+  padding: 0.625rem;
+}
+
+.imgLink:hover .overlay {
+  opacity: 1;
+}
+
+.authorOverlay {
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+@media (max-width: 900px) {
+  .grid { columns: 2; }
+}
+
+@media (max-width: 560px) {
+  .grid { columns: 1; }
+}
