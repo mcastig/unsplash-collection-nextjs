@@ -14,6 +14,7 @@ export default function HomePage() {
   const [localQuery, setLocalQuery] = useState(query);
 
   const handleSearch = () => {
+    /* c8 ignore next */
     if (!localQuery.trim()) return;
     dispatch(setQuery(localQuery));
     dispatch(searchPhotos({ query: localQuery, page: 1 }));

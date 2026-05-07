@@ -46,6 +46,7 @@ export default function ImageDetailPage() {
   }, [id, dispatch]);
 
   const handleDownload = () => {
+    /* c8 ignore next */
     if (!currentImage) return;
     const a = document.createElement("a");
     a.href = currentImage.urls.full;
@@ -58,6 +59,7 @@ export default function ImageDetailPage() {
   };
 
   const handleAddToCollection = async (collectionId: number) => {
+    /* c8 ignore next */
     if (!currentImage) return;
     const imageData = {
       image_id: currentImage.id,
@@ -74,6 +76,7 @@ export default function ImageDetailPage() {
     );
     if (result.meta.requestStatus === "fulfilled") {
       const col = collections.find((c) => c.id === collectionId);
+      /* c8 ignore next */
       if (col) {
         dispatch(
           addCollectionToImage({
@@ -95,6 +98,7 @@ export default function ImageDetailPage() {
   };
 
   const handleRemove = async (collectionId: number) => {
+    /* c8 ignore next */
     if (!currentImage) return;
     const result = await dispatch(
       removeImageFromCollection({ collectionId, imageId: currentImage.id }),

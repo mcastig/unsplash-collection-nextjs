@@ -9,7 +9,6 @@ import {
   fetchCollectionById,
   fetchCollectionImages,
 } from "@/store/collectionsSlice";
-import { UnsplashImage } from "@/types";
 
 export default function CollectionDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -21,36 +20,6 @@ export default function CollectionDetailPage() {
     dispatch(fetchCollectionById(Number(id)));
     dispatch(fetchCollectionImages(Number(id)));
   }, [id, dispatch]);
-
-  const toUnsplashImage = (
-    ci: import("@/types").CollectionImage,
-  ): UnsplashImage => ({
-    id: ci.image_id,
-    created_at: ci.published_at || ci.created_at,
-    width: 0,
-    height: 0,
-    description: null,
-    alt_description: null,
-    urls: {
-      raw: ci.image_url,
-      full: ci.image_url,
-      regular: ci.image_url,
-      small: ci.image_small_url,
-      thumb: ci.image_thumb_url,
-    },
-    links: { html: "", download: "", download_location: "" },
-    user: {
-      id: "",
-      name: ci.photographer_name || "",
-      username: ci.photographer_username || "",
-      profile_image: {
-        small: ci.photographer_avatar || "",
-        medium: "",
-        large: "",
-      },
-      links: { html: "" },
-    },
-  });
 
   return (
     <div className={styles.page}>
