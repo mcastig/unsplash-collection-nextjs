@@ -20,23 +20,23 @@ describe("lib/db", () => {
     );
   });
 
-  it("creates pool with ssl config for remote DATABASE_URL", () => {
+  it("creates pool with ssl:true for remote DATABASE_URL", () => {
     const MockPool = jest.fn();
     jest.doMock("pg", () => ({ Pool: MockPool }));
     process.env.DATABASE_URL = "postgresql://user@db.neon.tech/neondb";
     require("@/lib/db");
     expect(MockPool).toHaveBeenCalledWith(
-      expect.objectContaining({ ssl: { rejectUnauthorized: false } }),
+      expect.objectContaining({ ssl: true }),
     );
   });
 
-  it("creates pool with ssl config when DATABASE_URL is undefined", () => {
+  it("creates pool with ssl:true when DATABASE_URL is undefined", () => {
     const MockPool = jest.fn();
     jest.doMock("pg", () => ({ Pool: MockPool }));
     delete process.env.DATABASE_URL;
     require("@/lib/db");
     expect(MockPool).toHaveBeenCalledWith(
-      expect.objectContaining({ ssl: { rejectUnauthorized: false } }),
+      expect.objectContaining({ ssl: true }),
     );
   });
 });
