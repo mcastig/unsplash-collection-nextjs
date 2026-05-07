@@ -72,4 +72,20 @@ describe('POST /api/collections/[id]/images', () => {
     const res = await POST(req, makeParams('5'));
     expect(res.status).toBe(500);
   });
+
+  it('passes null for published_at when it is falsy', async () => {
+    mockPool.query.mockClear();
+    const bodyWithoutPublishedAt = { ...imageBody, published_at: '' };
+    const row = { id: 11, collection_id: 5, ...bodyWithoutPublishedAt };
+    mockPool.query.mockResolvedValueOnce({ rows: [row] } as never);
+    const req = new Request('http://localhost', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(bodyWithoutPublishedAt),
+    });
+    const res = await POST(req, makeParams('5'));
+    expect(res.status).toBe(201);
+    const calledArgs = mockPool.query.mock.calls[0][1] as unknown[];
+    expect(calledArgs[8]).toBeNull();
+  });
 });
