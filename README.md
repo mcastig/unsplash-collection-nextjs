@@ -10,7 +10,8 @@ A multi-page photo collection app built with Next.js 16, React 19, Redux Toolkit
 - **Add to collection** — add any image to one or more collections; already-added collections are filtered out
 - **Remove from collection** — remove images from collections on the image detail page
 - **Download** — download any image directly from the detail page
-- **Light / Dark theme** — toggle from the header; preference persisted in `localStorage`
+- **Light / Dark theme** — toggle from the header; preference persisted in `localStorage`; logo inverts to white in dark mode
+- **404 page** — custom not-found page with gradient code and Go Home link
 
 ## Tech Stack
 
@@ -22,6 +23,7 @@ A multi-page photo collection app built with Next.js 16, React 19, Redux Toolkit
 | Styling   | CSS Modules, Be Vietnam Pro font        |
 | Database  | PostgreSQL (Neon cloud or Docker local) |
 | API       | Unsplash REST API                       |
+| Testing   | Jest + Testing Library (237 tests, 100% coverage) |
 
 ## Getting Started
 
@@ -33,7 +35,7 @@ npm install
 
 ### 2. Set up environment variables
 
-Copy the right template for your environment:
+Copy the right template for your environment and fill in your real credentials:
 
 ```bash
 # Development (uses local Docker PostgreSQL by default)
@@ -43,7 +45,8 @@ cp .env.development .env.local
 cp .env.production .env.local
 ```
 
-Fill in your values — at minimum `DATABASE_URL` and both Unsplash keys.
+Fill in your values in `.env.local` — at minimum `DATABASE_URL` and the Unsplash keys.  
+**Never commit `.env.local`** — it is gitignored. The `.env.development` and `.env.production` files are placeholder templates only.
 
 ### 3. Start the database
 
@@ -57,7 +60,7 @@ This spins up PostgreSQL on `localhost:5432` and auto-runs `init.sql` to create 
 
 **Option B — Neon (cloud)**
 
-Create a project at [neon.tech](https://neon.tech), copy the connection string into `DATABASE_URL`, and run `init.sql` once against your database.
+Create a project at [neon.tech](https://neon.tech), copy the connection string into `DATABASE_URL` in `.env.local`, and run `init.sql` once against your database.
 
 ### 4. Run the dev server
 
@@ -70,10 +73,12 @@ Open [http://localhost:3000](http://localhost:3000).
 ## Scripts
 
 ```bash
-npm run dev      # start dev server (http://localhost:3000)
-npm run build    # production build
-npm run start    # serve production build
-npm run lint     # ESLint
+npm run dev          # start dev server (http://localhost:3000)
+npm run build        # production build
+npm run start        # serve production build
+npm run lint         # ESLint
+npm test             # Jest unit tests
+npm test -- --coverage  # tests with coverage report
 ```
 
 ## Project Structure
@@ -87,23 +92,28 @@ src/
 │   ├── search/               # Search results page
 │   ├── globals.css           # CSS variables, theme, global reset
 │   ├── layout.tsx            # Root layout (StoreProvider + Header)
+│   ├── not-found.tsx         # Custom 404 page
 │   └── page.tsx              # Homepage
 ├── components/               # UI components (each with .tsx, .module.css, .test.tsx)
 ├── lib/
-│   ├── db.ts                 # PostgreSQL connection pool
-│   └── unsplash.ts           # Unsplash API client
+│   ├── db.ts                 # PostgreSQL connection pool (SSL-validated)
+│   ├── logger.ts             # Server-side error logger
+│   ├── rateLimit.ts          # In-memory rate limiter (per client IP)
+│   └── unsplash.ts           # Unsplash API client (server-only key)
 ├── store/                    # Redux store and slices
 └── types/                    # Shared TypeScript types
+middleware.ts                 # CSRF origin-checking middleware for all API mutations
 ```
 
 ## Environment Variables
 
-| Variable                          | Used by | Description                    |
-| --------------------------------- | ------- | ------------------------------ |
-| `DATABASE_URL`                    | Server  | PostgreSQL connection string   |
-| `UNSPLASH_ACCESS_KEY`             | Server  | Unsplash API key (server-side) |
-| `NEXT_PUBLIC_UNSPLASH_ACCESS_KEY` | Client  | Unsplash API key (client-side) |
-| `NEXT_PUBLIC_APP_URL`             | Client  | App base URL                   |
+| Variable                          | Used by | Description                                     |
+| --------------------------------- | ------- | ----------------------------------------------- |
+| `DATABASE_URL`                    | Server  | PostgreSQL connection string                    |
+| `UNSPLASH_ACCESS_KEY`             | Server  | Unsplash API key (server-side only)             |
+| `UNSPLASH_SECRET_KEY`             | Server  | Unsplash secret (for future OAuth flows)        |
+| `NEXT_PUBLIC_UNSPLASH_ACCESS_KEY` | Client  | Unsplash API key (exposed to the browser)       |
+| `NEXT_PUBLIC_APP_URL`             | Both    | App base URL — used for CSRF origin validation  |
 
 ## Database Schema
 
@@ -134,3 +144,17 @@ collection_images (
 | `GET`    | `/api/unsplash/search?q=&page=`        | Proxy Unsplash search                     |
 | `GET`    | `/api/unsplash/photos/:id`             | Proxy Unsplash photo detail               |
 | `GET`    | `/api/unsplash/photos/:id/download`    | Trigger Unsplash download event           |
+
+All mutating endpoints (`POST`, `DELETE`) are protected by CSRF origin validation and rate limiting.
+
+## Security
+
+| Measure | Implementation |
+| ------- | -------------- |
+| CSRF protection | `middleware.ts` checks `Origin` header on all `POST`/`DELETE` requests |
+| Rate limiting | In-memory limiter per client IP (reads: 30/min, writes: 10/min, search: 20/min) |
+| Security headers | CSP, HSTS, `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, Referrer-Policy, Permissions-Policy |
+| SSL | Database connections enforce certificate validation (`ssl: true`) |
+| Input validation | Collection name capped at 100 chars; image fields type-checked; photo IDs validated against `[a-zA-Z0-9_-]` |
+| Error handling | Errors logged server-side in development only; clients receive generic messages |
+| Secrets | All credentials in `.env.local` (gitignored) — never in committed files |

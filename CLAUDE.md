@@ -5,13 +5,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 ```bash
-npm run dev      # start dev server at http://localhost:3000
-npm run build    # production build
-npm run start    # serve production build
-npm run lint     # run ESLint
+npm run dev              # start dev server at http://localhost:3000
+npm run build            # production build
+npm run start            # serve production build
+npm run lint             # run ESLint
+npm test                 # run Jest unit tests
+npm test -- --coverage   # run tests with V8 coverage report
 ```
-
-No test runner is configured yet (test files are scaffolded but Jest/Vitest is not installed).
 
 ## Stack
 
@@ -20,7 +20,7 @@ No test runner is configured yet (test files are scaffolded but Jest/Vitest is n
 - **Redux Toolkit** + **react-redux** (`src/store/`)
 - **CSS Modules** (`.module.css` per component) — no Tailwind, no CSS-in-JS
 - **PostgreSQL** via Neon (cloud) or Docker local — `DATABASE_URL` in `.env.local`
-- **Unsplash API** — `UNSPLASH_ACCESS_KEY` (server) + `NEXT_PUBLIC_UNSPLASH_ACCESS_KEY` (client)
+- **Unsplash API** — `UNSPLASH_ACCESS_KEY` (server-only) + `NEXT_PUBLIC_UNSPLASH_ACCESS_KEY` (client)
 - Font: **Be Vietnam Pro** via `@import` in `globals.css`
 
 ## Path alias
@@ -31,11 +31,20 @@ No test runner is configured yet (test files are scaffolded but Jest/Vitest is n
 
 | File               | Loaded when                                              |
 | ------------------ | -------------------------------------------------------- |
-| `.env.development` | `npm run dev` — points to local Docker DB                |
-| `.env.production`  | `npm run build` / `npm run start` — points to Neon       |
-| `.env.local`       | Always, overrides both — holds the active `DATABASE_URL` |
+| `.env.development` | `npm run dev` — points to local Docker DB (template only, no real credentials) |
+| `.env.production`  | `npm run build` / `npm run start` — points to Neon (template only, no real credentials) |
+| `.env.local`       | Always, overrides both — holds real credentials (gitignored) |
 
-`.env.local` is gitignored. The other two are committed as templates.
+`.env.local` is gitignored. `.env.development` and `.env.production` are committed as placeholder templates; they must never contain real API keys or passwords.
+
+## Testing
+
+Jest with `jest-environment-jsdom` (default) and `jest-environment-node` (API routes, annotated with `/** @jest-environment node */`).
+
+- Coverage provider: **V8** (`coverageProvider: "v8"` in `jest.config.ts`)
+- Ignore unreachable defensive branches with `/* c8 ignore next */`
+- Test files: `**/*.test.ts` / `**/*.test.tsx` co-located with the source
+- Current state: **33 suites, 237 tests, 100% coverage** (statements, branches, functions, lines)
 
 ## Database
 
@@ -50,7 +59,31 @@ collection_images (id, collection_id, image_id, image_url, image_thumb_url, imag
 
 **Local Docker:** `docker compose up -d` → PostgreSQL on `localhost:5432`.  
 **Neon:** connection string format: `postgresql://...@...neon.tech/neondb?sslmode=require`.  
-`src/lib/db.ts` skips SSL automatically when `DATABASE_URL` contains `localhost`.
+`src/lib/db.ts` skips SSL for localhost connections; uses `ssl: true` (system CA validation) for all remote connections.
+
+## Security infrastructure
+
+### Middleware (`middleware.ts`)
+
+Edge middleware runs on all `/api/*` routes. Rejects `POST`/`PUT`/`PATCH`/`DELETE` requests whose `Origin` header does not match `NEXT_PUBLIC_APP_URL`. Server-to-server requests (no `Origin`) are allowed through.
+
+### Rate limiting (`src/lib/rateLimit.ts`)
+
+In-memory rate limiter keyed by client IP (`x-forwarded-for` header). Skipped in `NODE_ENV=test`. Limits per route type:
+
+- Read endpoints: 30 req/min
+- Write/delete endpoints: 10 req/min
+- Search: 20 req/min
+
+For multi-instance/serverless deployments, swap the internal `Map` store for an Upstash Redis-backed limiter.
+
+### Error logging (`src/lib/logger.ts`)
+
+`logError(error, context)` — prints to `console.error` in `development` only. In `production`, wire in an error-tracking service (e.g. Sentry). Always returns a generic message to the client.
+
+### Security headers (`next.config.ts`)
+
+Applied to all routes via `headers()`: CSP, HSTS (2-year, preload), `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `X-XSS-Protection`, `Referrer-Policy`, `Permissions-Policy`.
 
 ## Architecture
 
@@ -63,8 +96,11 @@ collection_images (id, collection_id, image_id, image_url, image_thumb_url, imag
 | `/images/[id]`      | `src/app/images/[id]/page.tsx`      | Image detail — author, date, collections, add/remove/download |
 | `/collections`      | `src/app/collections/page.tsx`      | Collections grid — create, delete (hover trash icon)          |
 | `/collections/[id]` | `src/app/collections/[id]/page.tsx` | Collection detail — masonry photo grid                        |
+| `/*` (catch-all)    | `src/app/not-found.tsx`             | Custom 404 — gradient code, Go Home link                      |
 
 ### API Routes (`src/app/api/`)
+
+All routes apply rate limiting and error logging. Mutating routes are also protected by the CSRF middleware.
 
 | Endpoint                                        | Purpose                             |
 | ----------------------------------------------- | ----------------------------------- |
@@ -90,7 +126,7 @@ Each lives in its own folder: `Component.tsx` + `Component.module.css` + `Compon
 
 | Component              | Description                                                                |
 | ---------------------- | -------------------------------------------------------------------------- |
-| `Header`               | Sticky nav — logo, Home/Collections links, light/dark toggle               |
+| `Header`               | Sticky nav — logo (white in dark mode), Home/Collections links, theme toggle |
 | `SearchInput`          | Controlled input; submits on Enter if value is non-empty                   |
 | `ImageCard`            | Photo tile with hover overlay; links to `/images/[id]`                     |
 | `ImageGrid`            | 3-column masonry layout using CSS `columns`                                |
@@ -114,6 +150,8 @@ CSS variables in `globals.css`:
 ```
 
 Gradient: `linear-gradient(to right, #F2C593, #8A3282)` — use the `.gradient-text` utility class for text.
+
+The header logo uses `filter: brightness(0) invert(1)` in dark mode via `:global([data-theme="dark"]) .logoImg` in `Header.module.css`.
 
 ### CSS conventions
 
