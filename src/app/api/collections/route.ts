@@ -1,7 +1,14 @@
 import { NextResponse } from "next/server";
 import pool from "@/lib/db";
+import { checkRateLimit, getClientIp } from "@/lib/rateLimit";
+import { logError } from "@/lib/logger";
 
-export async function GET() {
+const MAX_NAME_LENGTH = 100;
+
+export async function GET(req: Request) {
+  if (!checkRateLimit(getClientIp(req), 30, 60_000)) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+  }
   try {
     const { rows } = await pool.query(`
       SELECT c.id, c.name, c.created_at,
@@ -14,7 +21,8 @@ export async function GET() {
       ORDER BY c.created_at DESC
     `);
     return NextResponse.json(rows);
-  } catch {
+  } catch (error) {
+    logError(error, "GET /api/collections");
     return NextResponse.json(
       { error: "Failed to fetch collections" },
       { status: 500 },
@@ -23,10 +31,23 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
+  if (!checkRateLimit(getClientIp(req), 10, 60_000)) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+  }
   try {
-    const { name } = await req.json();
-    if (!name?.trim())
-      return NextResponse.json({ error: "Name is required" }, { status: 400 });
+    const body = await req.json().catch(() => null);
+    const name = body?.name;
+    if (
+      !name ||
+      typeof name !== "string" ||
+      !name.trim() ||
+      name.trim().length > MAX_NAME_LENGTH
+    ) {
+      return NextResponse.json(
+        { error: `Name must be 1–${MAX_NAME_LENGTH} characters` },
+        { status: 400 },
+      );
+    }
     const { rows } = await pool.query(
       "INSERT INTO collections (name) VALUES ($1) RETURNING *",
       [name.trim()],
@@ -35,7 +56,8 @@ export async function POST(req: Request) {
       { ...rows[0], image_count: 0, cover_image: null },
       { status: 201 },
     );
-  } catch {
+  } catch (error) {
+    logError(error, "POST /api/collections");
     return NextResponse.json(
       { error: "Failed to create collection" },
       { status: 500 },

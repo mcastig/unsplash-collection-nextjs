@@ -1,10 +1,15 @@
 import { NextResponse } from "next/server";
 import pool from "@/lib/db";
+import { checkRateLimit, getClientIp } from "@/lib/rateLimit";
+import { logError } from "@/lib/logger";
 
 export async function GET(
-  _req: Request,
+  req: Request,
   { params }: { params: Promise<{ imageId: string }> },
 ) {
+  if (!checkRateLimit(getClientIp(req), 30, 60_000)) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+  }
   try {
     const { imageId } = await params;
     const { rows } = await pool.query(
@@ -16,7 +21,8 @@ export async function GET(
       [imageId],
     );
     return NextResponse.json(rows);
-  } catch {
+  } catch (error) {
+    logError(error, "GET /api/collections/by-image/[imageId]");
     return NextResponse.json({ error: "Failed to fetch" }, { status: 500 });
   }
 }

@@ -73,6 +73,37 @@ describe('POST /api/collections/[id]/images', () => {
     expect(res.status).toBe(500);
   });
 
+  it('returns 400 when a required field is missing', async () => {
+    const { image_id: _omit, ...bodyWithoutId } = imageBody;
+    const req = new Request('http://localhost', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(bodyWithoutId),
+    });
+    const res = await POST(req, makeParams('5'));
+    expect(res.status).toBe(400);
+  });
+
+  it('returns 400 when image_url is not a valid absolute URL', async () => {
+    const req = new Request('http://localhost', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...imageBody, image_url: 'http://[invalid' }),
+    });
+    const res = await POST(req, makeParams('5'));
+    expect(res.status).toBe(400);
+  });
+
+  it('returns 400 when body is not valid JSON', async () => {
+    const req = new Request('http://localhost', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: 'bad-json',
+    });
+    const res = await POST(req, makeParams('5'));
+    expect(res.status).toBe(400);
+  });
+
   it('passes null for published_at when it is falsy', async () => {
     mockPool.query.mockClear();
     const bodyWithoutPublishedAt = { ...imageBody, published_at: '' };
