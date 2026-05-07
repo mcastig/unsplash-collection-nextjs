@@ -15,14 +15,14 @@ A multi-page photo collection app built with Next.js 16, React 19, Redux Toolkit
 
 ## Tech Stack
 
-| Layer     | Technology                              |
-| --------- | --------------------------------------- |
-| Framework | Next.js 16 (App Router)                 |
-| UI        | React 19, TypeScript 5                  |
-| State     | Redux Toolkit + react-redux             |
-| Styling   | CSS Modules, Be Vietnam Pro font        |
-| Database  | PostgreSQL (Neon cloud or Docker local) |
-| API       | Unsplash REST API                       |
+| Layer     | Technology                                        |
+| --------- | ------------------------------------------------- |
+| Framework | Next.js 16 (App Router)                           |
+| UI        | React 19, TypeScript 5                            |
+| State     | Redux Toolkit + react-redux                       |
+| Styling   | CSS Modules, Be Vietnam Pro font                  |
+| Database  | PostgreSQL (Neon cloud or Docker local)           |
+| API       | Unsplash REST API                                 |
 | Testing   | Jest + Testing Library (237 tests, 100% coverage) |
 
 ## Getting Started
@@ -107,13 +107,13 @@ middleware.ts                 # CSRF origin-checking middleware for all API muta
 
 ## Environment Variables
 
-| Variable                          | Used by | Description                                     |
-| --------------------------------- | ------- | ----------------------------------------------- |
-| `DATABASE_URL`                    | Server  | PostgreSQL connection string                    |
-| `UNSPLASH_ACCESS_KEY`             | Server  | Unsplash API key (server-side only)             |
-| `UNSPLASH_SECRET_KEY`             | Server  | Unsplash secret (for future OAuth flows)        |
-| `NEXT_PUBLIC_UNSPLASH_ACCESS_KEY` | Client  | Unsplash API key (exposed to the browser)       |
-| `NEXT_PUBLIC_APP_URL`             | Both    | App base URL — used for CSRF origin validation  |
+| Variable                          | Used by | Description                                    |
+| --------------------------------- | ------- | ---------------------------------------------- |
+| `DATABASE_URL`                    | Server  | PostgreSQL connection string                   |
+| `UNSPLASH_ACCESS_KEY`             | Server  | Unsplash API key (server-side only)            |
+| `UNSPLASH_SECRET_KEY`             | Server  | Unsplash secret (for future OAuth flows)       |
+| `NEXT_PUBLIC_UNSPLASH_ACCESS_KEY` | Client  | Unsplash API key (exposed to the browser)      |
+| `NEXT_PUBLIC_APP_URL`             | Both    | App base URL — used for CSRF origin validation |
 
 ## Database Schema
 
@@ -149,12 +149,12 @@ All mutating endpoints (`POST`, `DELETE`) are protected by CSRF origin validatio
 
 ## Security
 
-| Measure | Implementation |
-| ------- | -------------- |
-| CSRF protection | `middleware.ts` checks `Origin` header on all `POST`/`DELETE` requests |
-| Rate limiting | In-memory limiter per client IP (reads: 30/min, writes: 10/min, search: 20/min) |
-| Security headers | CSP, HSTS, `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, Referrer-Policy, Permissions-Policy |
-| SSL | Database connections enforce certificate validation (`ssl: true`) |
+| Measure          | Implementation                                                                                              |
+| ---------------- | ----------------------------------------------------------------------------------------------------------- |
+| CSRF protection  | `middleware.ts` checks `Origin` header on all `POST`/`DELETE` requests                                      |
+| Rate limiting    | In-memory limiter per client IP (reads: 30/min, writes: 10/min, search: 20/min)                             |
+| Security headers | CSP, HSTS, `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, Referrer-Policy, Permissions-Policy  |
+| SSL              | Database connections enforce certificate validation (`ssl: true`)                                           |
 | Input validation | Collection name capped at 100 chars; image fields type-checked; photo IDs validated against `[a-zA-Z0-9_-]` |
-| Error handling | Errors logged server-side in development only; clients receive generic messages |
-| Secrets | All credentials in `.env.local` (gitignored) — never in committed files |
+| Error handling   | Errors logged server-side in development only; clients receive generic messages                             |
+| Secrets          | All credentials in `.env.local` (gitignored) — never in committed files                                     |
