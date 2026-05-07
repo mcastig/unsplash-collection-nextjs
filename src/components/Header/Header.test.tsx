@@ -48,4 +48,28 @@ describe("Header", () => {
     fireEvent.click(screen.getByLabelText("Toggle theme"));
     expect(localStorage.getItem("theme")).toBe("dark");
   });
+
+  it("reads saved theme from localStorage on mount", () => {
+    localStorage.setItem("theme", "dark");
+    render(<Header />);
+    expect(document.documentElement.getAttribute("data-theme")).toBe("dark");
+  });
+
+  it("prefers dark theme when matchMedia reports dark and no saved theme", () => {
+    Object.defineProperty(window, "matchMedia", {
+      writable: true,
+      value: (query: string) => ({
+        matches: query.includes("dark"),
+        media: query,
+        onchange: null,
+        addListener: jest.fn(),
+        removeListener: jest.fn(),
+        addEventListener: jest.fn(),
+        removeEventListener: jest.fn(),
+        dispatchEvent: jest.fn(),
+      }),
+    });
+    render(<Header />);
+    expect(document.documentElement.getAttribute("data-theme")).toBe("dark");
+  });
 });

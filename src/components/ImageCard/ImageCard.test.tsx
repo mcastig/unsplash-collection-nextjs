@@ -46,4 +46,33 @@ describe("ImageCard", () => {
     render(<ImageCard image={img} />);
     expect(screen.getByText("Jane Doe")).toBeInTheDocument();
   });
+
+  it("uses description when alt_description is null", () => {
+    const imgWithDesc: UnsplashImage = {
+      ...img,
+      alt_description: null,
+      description: "Mountain landscape",
+    };
+    render(<ImageCard image={imgWithDesc} />);
+    expect(screen.getByRole("img")).toHaveAttribute(
+      "alt",
+      "Mountain landscape",
+    );
+  });
+
+  it("uses fallback text when both alt_description and description are null", () => {
+    const imgNoAlt: UnsplashImage = {
+      ...img,
+      alt_description: null,
+      description: null,
+    };
+    render(<ImageCard image={imgNoAlt} />);
+    expect(screen.getByRole("img")).toHaveAttribute("alt", "Unsplash photo");
+  });
+
+  it("applies custom style prop to the link", () => {
+    render(<ImageCard image={img} style={{ opacity: 0.5 }} />);
+    const link = screen.getByRole("link");
+    expect((link as HTMLElement).style.opacity).toBe("0.5");
+  });
 });

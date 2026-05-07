@@ -60,4 +60,31 @@ describe("CollectionCard", () => {
     fireEvent.click(screen.getByLabelText("Delete Urban"));
     expect(onDelete).toHaveBeenCalledWith(7);
   });
+
+  it("uses image_small_url as cover when image_url is falsy", () => {
+    const colSmallOnly: Collection = {
+      ...col,
+      cover_image: {
+        id: 1,
+        collection_id: 7,
+        image_id: "img1",
+        image_url: "",
+        image_thumb_url: "/thumb.jpg",
+        image_small_url: "/small.jpg",
+        photographer_name: "X",
+        photographer_username: "x",
+        photographer_avatar: "",
+        published_at: null,
+        created_at: "",
+      },
+    };
+    render(<CollectionCard collection={colSmallOnly} />);
+    expect(screen.getByRole("img")).toHaveAttribute("src", "/small.jpg");
+  });
+
+  it("shows '0 photos' when image_count is undefined", () => {
+    const colNoCount: Collection = { ...col, image_count: undefined };
+    render(<CollectionCard collection={colNoCount} />);
+    expect(screen.getByText("0 photos")).toBeInTheDocument();
+  });
 });

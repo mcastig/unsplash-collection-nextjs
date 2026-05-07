@@ -49,4 +49,35 @@ describe("NewCollectionModal", () => {
     fireEvent.click(screen.getByText("Cancel"));
     expect(onCancel).toHaveBeenCalled();
   });
+
+  it("calls onCancel when backdrop is clicked", () => {
+    const onCancel = jest.fn();
+    const { container } = render(
+      <NewCollectionModal onSave={jest.fn()} onCancel={onCancel} />,
+    );
+    fireEvent.click(container.firstChild as Element);
+    expect(onCancel).toHaveBeenCalled();
+  });
+
+  it("does not call onSave when name is only whitespace", () => {
+    const onSave = jest.fn();
+    render(<NewCollectionModal onSave={onSave} onCancel={jest.fn()} />);
+    fireEvent.change(screen.getByPlaceholderText("Collection name"), {
+      target: { value: "   " },
+    });
+    fireEvent.click(screen.getByText("Save"));
+    expect(onSave).not.toHaveBeenCalled();
+  });
+
+  it("does not call onSave on Enter when name is only whitespace", () => {
+    const onSave = jest.fn();
+    render(<NewCollectionModal onSave={onSave} onCancel={jest.fn()} />);
+    fireEvent.change(screen.getByPlaceholderText("Collection name"), {
+      target: { value: "   " },
+    });
+    fireEvent.keyDown(screen.getByPlaceholderText("Collection name"), {
+      key: "Enter",
+    });
+    expect(onSave).not.toHaveBeenCalled();
+  });
 });

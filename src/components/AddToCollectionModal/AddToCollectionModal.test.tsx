@@ -97,4 +97,87 @@ describe("AddToCollectionModal", () => {
     fireEvent.click(container.firstChild as Element);
     expect(onClose).toHaveBeenCalled();
   });
+
+  it("shows 'No available collections' when no query and all filtered out", () => {
+    render(
+      <AddToCollectionModal
+        {...baseProps}
+        alreadyInCollectionIds={[1, 2, 3]}
+      />,
+    );
+    expect(screen.getByText("No available collections")).toBeInTheDocument();
+  });
+
+  it("renders cover image using image_thumb_url when available", () => {
+    const colWithThumb = {
+      ...collections[0],
+      cover_image: {
+        id: 1,
+        collection_id: 1,
+        image_id: "img1",
+        image_url: "/full.jpg",
+        image_thumb_url: "/thumb.jpg",
+        image_small_url: "/small.jpg",
+        photographer_name: "X",
+        photographer_username: "x",
+        photographer_avatar: "",
+        published_at: null,
+        created_at: "",
+      },
+    };
+    render(
+      <AddToCollectionModal
+        {...baseProps}
+        collections={[colWithThumb]}
+      />,
+    );
+    const img = screen.getByRole("img", { hidden: true });
+    expect(img).toHaveAttribute("src", "/thumb.jpg");
+  });
+
+  it("renders cover image using image_url when image_thumb_url is empty", () => {
+    const colWithUrlOnly = {
+      ...collections[0],
+      cover_image: {
+        id: 1,
+        collection_id: 1,
+        image_id: "img1",
+        image_url: "/full.jpg",
+        image_thumb_url: "",
+        image_small_url: "/small.jpg",
+        photographer_name: "X",
+        photographer_username: "x",
+        photographer_avatar: "",
+        published_at: null,
+        created_at: "",
+      },
+    };
+    render(
+      <AddToCollectionModal
+        {...baseProps}
+        collections={[colWithUrlOnly]}
+      />,
+    );
+    const img = screen.getByRole("img", { hidden: true });
+    expect(img).toHaveAttribute("src", "/full.jpg");
+  });
+
+  it("shows singular 'match' when exactly one result", () => {
+    render(<AddToCollectionModal {...baseProps} />);
+    fireEvent.change(screen.getByPlaceholderText("Search collections..."), {
+      target: { value: "nat" },
+    });
+    expect(screen.getByText("1 match")).toBeInTheDocument();
+  });
+
+  it("shows '0 photos' when image_count is undefined on a collection", () => {
+    const colNoCount = { ...collections[0], image_count: undefined };
+    render(
+      <AddToCollectionModal
+        {...baseProps}
+        collections={[colNoCount]}
+      />,
+    );
+    expect(screen.getByText("0 photos")).toBeInTheDocument();
+  });
 });
