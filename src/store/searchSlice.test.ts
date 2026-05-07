@@ -63,6 +63,17 @@ describe("searchSlice — async thunks", () => {
     expect(state.hasSearched).toBe(true);
   });
 
+  it("falls back to page 1 when meta.arg.page is undefined", () => {
+    const payload = { results: [], total: 0, total_pages: 0 };
+    const action = {
+      type: searchPhotos.fulfilled.type,
+      payload,
+      meta: { arg: {} },
+    };
+    const state = searchReducer(initialState, action);
+    expect(state.page).toBe(1);
+  });
+
   it("stores error on rejected", () => {
     const action = {
       type: searchPhotos.rejected.type,
@@ -71,6 +82,15 @@ describe("searchSlice — async thunks", () => {
     const state = searchReducer(initialState, action);
     expect(state.loading).toBe(false);
     expect(state.error).toBe("fail");
+  });
+
+  it("uses fallback error message on rejected without message", () => {
+    const action = {
+      type: searchPhotos.rejected.type,
+      error: {},
+    };
+    const state = searchReducer(initialState, action);
+    expect(state.error).toBe("Search failed");
   });
 
   it("dispatches fulfilled when fetch succeeds", async () => {

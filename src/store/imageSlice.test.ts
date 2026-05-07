@@ -64,7 +64,7 @@ describe("imageSlice — reducers", () => {
   });
 });
 
-describe("imageSlice — async thunks", () => {
+describe("imageSlice — async thunks (reducers)", () => {
   it("sets loading on fetchImageDetail pending", () => {
     const s = imageReducer(initialState, {
       type: fetchImageDetail.pending.type,
@@ -81,6 +81,23 @@ describe("imageSlice — async thunks", () => {
     expect(s.loading).toBe(false);
   });
 
+  it("stores error on fetchImageDetail rejected", () => {
+    const s = imageReducer(initialState, {
+      type: fetchImageDetail.rejected.type,
+      error: { message: "Not found" },
+    });
+    expect(s.loading).toBe(false);
+    expect(s.error).toBe("Not found");
+  });
+
+  it("uses fallback error message on fetchImageDetail rejected without message", () => {
+    const s = imageReducer(initialState, {
+      type: fetchImageDetail.rejected.type,
+      error: {},
+    });
+    expect(s.error).toBe("Error");
+  });
+
   it("stores imageCollections on fetchImageCollections fulfilled", () => {
     const payload = [{ collectionId: 1, collectionName: "X", entry: {} }];
     const s = imageReducer(initialState, {
@@ -88,5 +105,49 @@ describe("imageSlice — async thunks", () => {
       payload,
     });
     expect(s.imageCollections).toEqual(payload);
+  });
+});
+
+describe("imageSlice — thunk integration", () => {
+  beforeEach(() => (global.fetch as jest.Mock).mockReset());
+
+  it("fetchImageDetail fetches /api/unsplash/photos/:id", async () => {
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockImage,
+    });
+    const dispatch = jest.fn();
+    await fetchImageDetail("abc")(dispatch, () => ({}), undefined);
+    expect(global.fetch).toHaveBeenCalledWith("/api/unsplash/photos/abc");
+  });
+
+  it("fetchImageDetail rejects on non-ok response", async () => {
+    (global.fetch as jest.Mock).mockResolvedValueOnce({ ok: false });
+    const dispatch = jest.fn();
+    await fetchImageDetail("abc")(dispatch, () => ({}), undefined);
+    expect(dispatch).toHaveBeenCalledWith(
+      expect.objectContaining({ type: fetchImageDetail.rejected.type }),
+    );
+  });
+
+  it("fetchImageCollections fetches /api/collections/by-image/:id", async () => {
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: true,
+      json: async () => [],
+    });
+    const dispatch = jest.fn();
+    await fetchImageCollections("abc")(dispatch, () => ({}), undefined);
+    expect(global.fetch).toHaveBeenCalledWith(
+      "/api/collections/by-image/abc",
+    );
+  });
+
+  it("fetchImageCollections rejects on non-ok response", async () => {
+    (global.fetch as jest.Mock).mockResolvedValueOnce({ ok: false });
+    const dispatch = jest.fn();
+    await fetchImageCollections("abc")(dispatch, () => ({}), undefined);
+    expect(dispatch).toHaveBeenCalledWith(
+      expect.objectContaining({ type: fetchImageCollections.rejected.type }),
+    );
   });
 });
