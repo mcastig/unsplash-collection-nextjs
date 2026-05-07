@@ -151,13 +151,11 @@ export default function ImageDetailPage() {
               alt={currentImage.user.name}
             />
           )}
-          <div>
-            <p className={styles.authorName}>{currentImage.user.name}</p>
-            <p className={styles.publishedDate}>
-              Published {formatDate(currentImage.created_at)}
-            </p>
-          </div>
+          <p className={styles.authorName}>{currentImage.user.name}</p>
         </div>
+        <p className={styles.publishedDate}>
+          Published on {formatDate(currentImage.created_at)}
+        </p>
 
         <div className={styles.actions}>
           <button
@@ -216,8 +214,7 @@ export default function ImageDetailPage() {
                     className={styles.removeBtn}
                     onClick={() => handleRemove(ic.collectionId)}
                   >
-                    <Image src="/Remove.svg" alt="" width={14} height={14} />
-                    Remove
+                    — Remove
                   </button>
                 </li>
               ))}

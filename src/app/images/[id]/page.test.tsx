@@ -370,7 +370,7 @@ describe("ImageDetailPage", () => {
     );
     render(<ImageDetailPage />);
     await act(async () => {
-      fireEvent.click(screen.getByText("Remove"));
+      fireEvent.click(screen.getByText("— Remove"));
     });
     expect(mockDispatch).toHaveBeenCalled();
   });
@@ -392,7 +392,7 @@ describe("ImageDetailPage", () => {
     );
     render(<ImageDetailPage />);
     await act(async () => {
-      fireEvent.click(screen.getByText("Remove"));
+      fireEvent.click(screen.getByText("— Remove"));
     });
     expect(rejectedDispatch).toHaveBeenCalled();
   });
