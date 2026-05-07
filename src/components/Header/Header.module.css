@@ -26,6 +26,10 @@
   height: 100%;
 }
 
+:global([data-theme="dark"]) .logoImg {
+  filter: brightness(0) invert(1);
+}
+
 .nav {
   display: flex;
   align-items: center;
