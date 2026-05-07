@@ -1,10 +1,10 @@
 import { UnsplashImage, UnsplashSearchResult } from "@/types";
 
 const BASE_URL = "https://api.unsplash.com";
-const ACCESS_KEY =
-  process.env.NEXT_PUBLIC_UNSPLASH_ACCESS_KEY ||
-  process.env.UNSPLASH_ACCESS_KEY ||
-  "";
+const ACCESS_KEY = process.env.UNSPLASH_ACCESS_KEY || "";
+
+const PHOTO_ID_RE = /^[a-zA-Z0-9_-]+$/;
+const MAX_QUERY_LENGTH = 200;
 
 async function unsplashFetch<T>(
   path: string,
@@ -25,14 +25,16 @@ export async function searchPhotos(
   page = 1,
   perPage = 20,
 ): Promise<UnsplashSearchResult> {
+  const safeQuery = query.slice(0, MAX_QUERY_LENGTH);
   return unsplashFetch<UnsplashSearchResult>("/search/photos", {
-    query,
+    query: safeQuery,
     page: String(page),
     per_page: String(perPage),
   });
 }
 
 export async function getPhoto(id: string): Promise<UnsplashImage> {
+  if (!PHOTO_ID_RE.test(id)) throw new Error("Invalid photo ID");
   return unsplashFetch<UnsplashImage>(`/photos/${id}`);
 }
 

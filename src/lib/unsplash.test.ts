@@ -74,6 +74,28 @@ describe("lib/unsplash", () => {
         "Unsplash API error: 404",
       );
     });
+
+    it("throws on invalid photo id containing path traversal characters", async () => {
+      await expect(getPhoto("../secrets")).rejects.toThrow("Invalid photo ID");
+    });
+
+    it("throws on empty photo id", async () => {
+      await expect(getPhoto("")).rejects.toThrow("Invalid photo ID");
+    });
+  });
+
+  describe("searchPhotos query truncation", () => {
+    it("truncates queries longer than 200 characters", async () => {
+      (global.fetch as jest.Mock).mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ results: [], total: 0, total_pages: 0 }),
+      });
+      const longQuery = "a".repeat(300);
+      await searchPhotos(longQuery);
+      const calledUrl = (global.fetch as jest.Mock).mock.calls[0][0] as string;
+      const params = new URL(calledUrl).searchParams;
+      expect(params.get("query")!.length).toBe(200);
+    });
   });
 
   describe("triggerDownload", () => {
