@@ -44,7 +44,7 @@ Jest with `jest-environment-jsdom` (default) and `jest-environment-node` (API ro
 - Coverage provider: **V8** (`coverageProvider: "v8"` in `jest.config.ts`)
 - Ignore unreachable defensive branches with `/* c8 ignore next */`
 - Test files: `**/*.test.ts` / `**/*.test.tsx` co-located with the source
-- Current state: **33 suites, 237 tests, 100% coverage** (statements, branches, functions, lines)
+- Current state: **33 suites, 248 tests, 100% coverage** (statements, branches, functions, lines)
 
 ## Database
 

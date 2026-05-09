@@ -23,7 +23,7 @@ A multi-page photo collection app built with Next.js 16, React 19, Redux Toolkit
 | Styling   | CSS Modules, Be Vietnam Pro font                  |
 | Database  | PostgreSQL (Neon cloud or Docker local)           |
 | API       | Unsplash REST API                                 |
-| Testing   | Jest + Testing Library (237 tests, 100% coverage) |
+| Testing   | Jest + Testing Library (248 tests, 100% coverage) |
 
 ## Getting Started
 
@@ -69,6 +69,32 @@ npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000).
+
+## Deploying to Vercel
+
+The app is live at **[unsplash-collection-nextjs.vercel.app](https://unsplash-collection-nextjs.vercel.app)**.
+
+To deploy your own instance:
+
+1. Push the repo to GitHub and import it in [vercel.com](https://vercel.com).
+2. Add all required environment variables in **Vercel → Project → Settings → Environment Variables**:
+
+| Variable | Description |
+| --- | --- |
+| `DATABASE_URL` | Neon connection string: `postgresql://...@...neon.tech/neondb?sslmode=require` |
+| `UNSPLASH_ACCESS_KEY` | Unsplash API access key (server-only) |
+| `NEXT_PUBLIC_UNSPLASH_ACCESS_KEY` | Same key, exposed to the browser |
+| `NEXT_PUBLIC_APP_URL` | Your Vercel deployment URL, e.g. `https://your-app.vercel.app` |
+
+3. Apply the database schema to your Neon project once — paste `init.sql` into the Neon SQL editor or run:
+
+```bash
+psql "postgresql://...@...neon.tech/neondb?sslmode=require" -f init.sql
+```
+
+4. Redeploy (or trigger a new deployment) — Vercel will pick up the env vars automatically.
+
+> **`NEXT_PUBLIC_APP_URL` is required.** The CSRF middleware uses it to validate the `Origin` header on all mutating requests. Without it, every `POST` and `DELETE` from the browser will be rejected with 403.
 
 ## Scripts
 
