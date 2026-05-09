@@ -2,15 +2,21 @@
  * @jest-environment node
  */
 import { GET } from "./route";
+import { checkRateLimit } from "@/lib/rateLimit";
 
 jest.mock("@/lib/unsplash", () => ({
   searchPhotos: jest.fn(),
+}));
+jest.mock("@/lib/rateLimit", () => ({
+  checkRateLimit: jest.fn().mockReturnValue(true),
+  getClientIp: jest.fn().mockReturnValue("127.0.0.1"),
 }));
 
 import { searchPhotos } from "@/lib/unsplash";
 const mockSearchPhotos = searchPhotos as jest.MockedFunction<
   typeof searchPhotos
 >;
+const mockCheckRateLimit = checkRateLimit as jest.MockedFunction<typeof checkRateLimit>;
 
 function makeRequest(query: string, page?: string): Request {
   const url = new URL("http://localhost/api/unsplash/search");
@@ -40,5 +46,11 @@ describe("GET /api/unsplash/search", () => {
     mockSearchPhotos.mockRejectedValueOnce(new Error("api down"));
     const res = await GET(makeRequest("trees"));
     expect(res.status).toBe(500);
+  });
+
+  it("returns 429 when rate limited", async () => {
+    mockCheckRateLimit.mockReturnValueOnce(false);
+    const res = await GET(makeRequest("nature"));
+    expect(res.status).toBe(429);
   });
 });

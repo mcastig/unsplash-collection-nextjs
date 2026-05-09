@@ -3,10 +3,16 @@
  */
 import { DELETE } from "./route";
 import pool from "@/lib/db";
+import { checkRateLimit } from "@/lib/rateLimit";
 
 jest.mock("@/lib/db", () => ({ query: jest.fn() }));
+jest.mock("@/lib/rateLimit", () => ({
+  checkRateLimit: jest.fn().mockReturnValue(true),
+  getClientIp: jest.fn().mockReturnValue("127.0.0.1"),
+}));
 
 const mockPool = pool as jest.Mocked<typeof pool>;
+const mockCheckRateLimit = checkRateLimit as jest.MockedFunction<typeof checkRateLimit>;
 
 const makeParams = (id: string, imageId: string) => ({
   params: Promise.resolve({ id, imageId }),
@@ -34,5 +40,14 @@ describe("DELETE /api/collections/[id]/images/[imageId]", () => {
       makeParams("3", "imgABC"),
     );
     expect(res.status).toBe(500);
+  });
+
+  it("returns 429 when rate limited", async () => {
+    mockCheckRateLimit.mockReturnValueOnce(false);
+    const res = await DELETE(
+      new Request("http://localhost"),
+      makeParams("3", "imgABC"),
+    );
+    expect(res.status).toBe(429);
   });
 });

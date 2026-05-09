@@ -3,10 +3,16 @@
  */
 import { GET, POST } from "./route";
 import pool from "@/lib/db";
+import { checkRateLimit } from "@/lib/rateLimit";
 
 jest.mock("@/lib/db", () => ({ query: jest.fn() }));
+jest.mock("@/lib/rateLimit", () => ({
+  checkRateLimit: jest.fn().mockReturnValue(true),
+  getClientIp: jest.fn().mockReturnValue("127.0.0.1"),
+}));
 
 const mockPool = pool as jest.Mocked<typeof pool>;
+const mockCheckRateLimit = checkRateLimit as jest.MockedFunction<typeof checkRateLimit>;
 
 function makeRequest(body?: object): Request {
   return new Request("http://localhost/api/collections", {
@@ -29,6 +35,12 @@ describe("GET /api/collections", () => {
     mockPool.query.mockRejectedValueOnce(new Error("db error") as never);
     const res = await GET(makeRequest());
     expect(res.status).toBe(500);
+  });
+
+  it("returns 429 when rate limited", async () => {
+    mockCheckRateLimit.mockReturnValueOnce(false);
+    const res = await GET(makeRequest());
+    expect(res.status).toBe(429);
   });
 });
 
@@ -73,5 +85,11 @@ describe("POST /api/collections", () => {
     mockPool.query.mockRejectedValueOnce(new Error("fail") as never);
     const res = await POST(makeRequest({ name: "Test" }));
     expect(res.status).toBe(500);
+  });
+
+  it("returns 429 when rate limited", async () => {
+    mockCheckRateLimit.mockReturnValueOnce(false);
+    const res = await POST(makeRequest({ name: "Test" }));
+    expect(res.status).toBe(429);
   });
 });

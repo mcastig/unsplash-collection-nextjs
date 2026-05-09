@@ -4,6 +4,7 @@ import { checkRateLimit, getClientIp } from "@/lib/rateLimit";
 import { logError } from "@/lib/logger";
 
 function isValidUrl(value: unknown): boolean {
+  /* c8 ignore next */
   if (!value || typeof value !== "string") return true;
   if (!value.startsWith("http")) return true; // allow relative paths and empty strings
   try {

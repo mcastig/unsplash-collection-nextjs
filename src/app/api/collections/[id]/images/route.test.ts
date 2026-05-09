@@ -3,10 +3,16 @@
  */
 import { GET, POST } from './route';
 import pool from '@/lib/db';
+import { checkRateLimit } from '@/lib/rateLimit';
 
 jest.mock('@/lib/db', () => ({ query: jest.fn() }));
+jest.mock('@/lib/rateLimit', () => ({
+  checkRateLimit: jest.fn().mockReturnValue(true),
+  getClientIp: jest.fn().mockReturnValue('127.0.0.1'),
+}));
 
 const mockPool = pool as jest.Mocked<typeof pool>;
+const mockCheckRateLimit = checkRateLimit as jest.MockedFunction<typeof checkRateLimit>;
 
 const makeParams = (id: string) => ({ params: Promise.resolve({ id }) });
 
@@ -34,6 +40,12 @@ describe('GET /api/collections/[id]/images', () => {
     mockPool.query.mockRejectedValueOnce(new Error('fail'));
     const res = await GET(new Request('http://localhost'), makeParams('5'));
     expect(res.status).toBe(500);
+  });
+
+  it('returns 429 when rate limited', async () => {
+    mockCheckRateLimit.mockReturnValueOnce(false);
+    const res = await GET(new Request('http://localhost'), makeParams('5'));
+    expect(res.status).toBe(429);
   });
 });
 
@@ -102,6 +114,17 @@ describe('POST /api/collections/[id]/images', () => {
     });
     const res = await POST(req, makeParams('5'));
     expect(res.status).toBe(400);
+  });
+
+  it('returns 429 when rate limited', async () => {
+    mockCheckRateLimit.mockReturnValueOnce(false);
+    const req = new Request('http://localhost', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(imageBody),
+    });
+    const res = await POST(req, makeParams('5'));
+    expect(res.status).toBe(429);
   });
 
   it('passes null for published_at when it is falsy', async () => {
